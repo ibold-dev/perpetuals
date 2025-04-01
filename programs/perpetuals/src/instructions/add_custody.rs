@@ -148,11 +148,9 @@ pub fn add_custody<'info>(
     custody.borrow_rate = params.borrow_rate;
     custody.borrow_rate_state.current_rate = params.borrow_rate.base_rate;
     custody.borrow_rate_state.last_update = ctx.accounts.perpetuals.get_time()?;
-    custody.bump = *ctx.bumps.get("custody").ok_or(ProgramError::InvalidSeeds)?;
-    custody.token_account_bump = *ctx
-        .bumps
-        .get("custody_token_account")
-        .ok_or(ProgramError::InvalidSeeds)?;
+    
+    custody.bump = ctx.bumps.custody;
+    custody.token_account_bump = ctx.bumps.custody_token_account;
 
     if !custody.validate() {
         err!(PerpetualsError::InvalidCustodyConfig)

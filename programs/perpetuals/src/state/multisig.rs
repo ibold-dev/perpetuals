@@ -49,7 +49,11 @@ impl Multisig {
         instruction_accounts: &[AccountInfo],
         instruction_data: &[u8],
     ) -> u64 {
-        let mut hasher = AHasher::new_with_keys(697533735114380, 537268678243635);
+        let mut hasher = AHasher::default();
+        
+        hasher.write_u64(697533735114380);
+        hasher.write_u64(537268678243635);
+        
         for account in instruction_accounts {
             hasher.write(account.key.as_ref());
         }
@@ -60,7 +64,7 @@ impl Multisig {
     }
 
     /// Returns all accounts for the given context
-    pub fn get_account_infos<'info, T: ToAccountInfos<'info>>(
+    pub fn get_account_infos<'info, T: ToAccountInfos<'info> + anchor_lang::Bumps>(
         ctx: &Context<'_, '_, '_, 'info, T>,
     ) -> Vec<AccountInfo<'info>> {
         let mut infos = ctx.accounts.to_account_infos();

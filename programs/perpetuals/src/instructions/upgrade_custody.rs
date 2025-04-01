@@ -91,8 +91,8 @@ pub struct UpgradeCustody<'info> {
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct UpgradeCustodyParams {}
 
-pub fn upgrade_custody<'info>(
-    ctx: Context<'_, '_, '_, 'info, UpgradeCustody<'info>>,
+pub fn upgrade_custody<'a, 'b, 'c, 'info>(
+    ctx: Context<'a, 'b, 'c, 'info, UpgradeCustody<'info>>,
     params: &UpgradeCustodyParams,
 ) -> Result<u8> {
     // validate signatures
@@ -120,7 +120,14 @@ pub fn upgrade_custody<'info>(
     if custody_account.try_data_len()? != DeprecatedCustody::LEN {
         return Err(ProgramError::InvalidAccountData.into());
     }
-    let deprecated_custody = Account::<DeprecatedCustody>::try_from_unchecked(custody_account)?;
+    
+    // Use a different approach to deserialize the account data
+    let data = custody_account.try_borrow_data()?;
+    let mut lamports = custody_account.lamports();
+    let owner = *custody_account.owner;
+    
+    // Create the deprecated custody account directly
+    let deprecated_custody = DeprecatedCustody::try_deserialize(&mut &data[8..])?;
 
     // update custody data
     let custody_data = Custody {

@@ -272,10 +272,7 @@ pub fn open_position(ctx: Context<OpenPosition>, params: &OpenPositionParams) ->
     position.cumulative_interest_snapshot = collateral_custody.get_cumulative_interest(curtime)?;
     position.locked_amount = locked_amount;
     position.collateral_amount = params.collateral;
-    position.bump = *ctx
-        .bumps
-        .get("position")
-        .ok_or(ProgramError::InvalidSeeds)?;
+    position.bump = ctx.bumps.position;
 
     // check position risk
     msg!("Check position risks");

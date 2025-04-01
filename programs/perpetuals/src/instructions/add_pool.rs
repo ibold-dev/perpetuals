@@ -116,11 +116,8 @@ pub fn add_pool<'info>(
     msg!("Record pool: {}", params.name);
     pool.inception_time = perpetuals.get_time()?;
     pool.name = params.name.clone();
-    pool.bump = *ctx.bumps.get("pool").ok_or(ProgramError::InvalidSeeds)?;
-    pool.lp_token_bump = *ctx
-        .bumps
-        .get("lp_token_mint")
-        .ok_or(ProgramError::InvalidSeeds)?;
+    pool.bump = ctx.bumps.pool;
+    pool.lp_token_bump = ctx.bumps.lp_token_mint;
 
     if !pool.validate() {
         return err!(PerpetualsError::InvalidPoolConfig);

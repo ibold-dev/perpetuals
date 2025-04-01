@@ -4,7 +4,7 @@ use {
         instructions,
         utils::{self, fixtures},
     },
-    bonfida_test_utils::ProgramTestExt,
+    // bonfida_test_utils::ProgramTestExt,
     perpetuals::{
         instructions::{AddCustodyParams, AddLiquidityParams, SetCustomOraclePriceParams},
         state::{
@@ -154,13 +154,18 @@ impl TestSetup {
         };
 
         // Initialize mints
+        let mut mint_keypairs: Vec<Keypair> = Vec::new();
         let mints = {
             let mut mints: HashMap<String, MintInfo> = HashMap::new();
 
-            for mint_param in mints_param {
-                let mint_pubkey = program_test
-                    .add_mint(None, mint_param.decimals, &root_authority_keypair.pubkey())
-                    .0;
+            for mint_param in &mints_param {
+                // Create a new mint keypair
+                let mint_keypair = Keypair::new();
+                
+                let mint_pubkey = mint_keypair.pubkey();
+                
+                // Store the keypair for later initialization
+                mint_keypairs.push(utils::copy_keypair(&mint_keypair));
 
                 mints.insert(
                     mint_param.name.to_string(),
@@ -177,6 +182,20 @@ impl TestSetup {
         // Start the client and connect to localnet validator
         let program_test_ctx: RwLock<ProgramTestContext> =
             RwLock::new(program_test.start_with_context().await);
+
+        // Now initialize each mint
+        for (i, mint_param) in mints_param.iter().enumerate() {
+            let mint_keypair = &mint_keypairs[i];
+            
+            // Create and initialize the mint
+            utils::create_and_initialize_mint(
+                &program_test_ctx,
+                mint_keypair,
+                &root_authority_keypair,
+                None, // No freeze authority
+                mint_param.decimals,
+            ).await;
+        }
 
         // Initialize multisig
         let multisig_members = {

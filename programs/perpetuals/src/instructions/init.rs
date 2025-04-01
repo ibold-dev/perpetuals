@@ -80,10 +80,7 @@ pub fn init(ctx: Context<Init>, params: &InitParams) -> Result<()> {
     multisig.set_signers(ctx.remaining_accounts, params.min_signatures)?;
 
     // record multisig PDA bump
-    multisig.bump = *ctx
-        .bumps
-        .get("multisig")
-        .ok_or(ProgramError::InvalidSeeds)?;
+    multisig.bump = ctx.bumps.multisig;
 
     // record perpetuals
     let perpetuals = ctx.accounts.perpetuals.as_mut();
@@ -96,14 +93,8 @@ pub fn init(ctx: Context<Init>, params: &InitParams) -> Result<()> {
     perpetuals.permissions.allow_pnl_withdrawal = params.allow_pnl_withdrawal;
     perpetuals.permissions.allow_collateral_withdrawal = params.allow_collateral_withdrawal;
     perpetuals.permissions.allow_size_change = params.allow_size_change;
-    perpetuals.transfer_authority_bump = *ctx
-        .bumps
-        .get("transfer_authority")
-        .ok_or(ProgramError::InvalidSeeds)?;
-    perpetuals.perpetuals_bump = *ctx
-        .bumps
-        .get("perpetuals")
-        .ok_or(ProgramError::InvalidSeeds)?;
+    perpetuals.transfer_authority_bump = ctx.bumps.transfer_authority;
+    perpetuals.perpetuals_bump = ctx.bumps.perpetuals;
     perpetuals.inception_time = perpetuals.get_time()?;
 
     if !perpetuals.validate() {

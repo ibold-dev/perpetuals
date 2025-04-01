@@ -1,7 +1,7 @@
 //! Oracle price service handling
 
 use {
-    crate::{error::PerpetualsError, math, state::perpetuals::Perpetuals},
+    crate::{error::PerpetualsError, math, state::perpetuals::Perpetuals, try_from},
     anchor_lang::prelude::*,
     core::cmp::Ordering,
 };
@@ -250,7 +250,7 @@ impl OraclePrice {
             PerpetualsError::InvalidOracleAccount
         );
 
-        let oracle_acc = Account::<CustomOracle>::try_from(custom_price_info)?;
+        let oracle_acc = try_from!(Account<CustomOracle>, custom_price_info)?;
 
         let last_update_age_sec = math::checked_sub(current_time, oracle_acc.publish_time)?;
         if last_update_age_sec > max_price_age_sec as i64 {
@@ -291,24 +291,44 @@ impl OraclePrice {
             !Perpetuals::is_empty_account(pyth_price_info)?,
             PerpetualsError::InvalidOracleAccount
         );
-        let price_feed = pyth_sdk_solana::load_price_feed_from_account_info(pyth_price_info)
-            .map_err(|_| PerpetualsError::InvalidOracleAccount)?;
-        let pyth_price = if use_ema {
-            price_feed.get_ema_price_unchecked()
-        } else {
-            price_feed.get_price_unchecked()
-        };
 
-        let last_update_age_sec = math::checked_sub(current_time, pyth_price.publish_time)?;
+        let data = &pyth_price_info.data.borrow();
+
+        // Skip the 8-byte discriminator when passing to Pyth
+        let price_v2 = pyth_min::price_update::PriceUpdateV2::get_price_update_v2_from_bytes(&data[8..]);
+
+        // Get the price message
+        let price_message = price_v2.price_message;
+        let publish_time = price_message.publish_time;
+
+        let last_update_age_sec = math::checked_sub(current_time, publish_time)?;
+
         if last_update_age_sec > max_price_age_sec as i64 {
             msg!("Error: Pyth oracle price is stale");
             return err!(PerpetualsError::StaleOraclePrice);
         }
-
-        if pyth_price.price <= 0
+        
+        // Use EMA price if requested, otherwise use current price
+        let price_value = if use_ema {
+            if price_message.ema_price <= 0 {
+                msg!("Error: Pyth oracle EMA price is invalid");
+                return err!(PerpetualsError::InvalidOraclePrice);
+            }
+            price_message.ema_price
+        } else {
+            price_message.price
+        };
+        
+        let conf_value = if use_ema {
+            price_message.ema_conf
+        } else {
+            price_message.conf
+        };
+        
+        if price_value <= 0
             || math::checked_div(
-                math::checked_mul(pyth_price.conf as u128, Perpetuals::BPS_POWER)?,
-                pyth_price.price as u128,
+                math::checked_mul(conf_value as u128, Perpetuals::BPS_POWER)?,
+                price_value as u128,
             )? > max_price_error as u128
         {
             msg!("Error: Pyth oracle price is out of bounds");
@@ -316,9 +336,8 @@ impl OraclePrice {
         }
 
         Ok(OraclePrice {
-            // price is i64 and > 0 per check above
-            price: pyth_price.price as u64,
-            exponent: pyth_price.expo,
+            price: price_value as u64,
+            exponent: price_message.exponent,
         })
     }
 }

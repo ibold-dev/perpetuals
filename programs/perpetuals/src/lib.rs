@@ -26,6 +26,14 @@ solana_security_txt::security_txt! {
 
 declare_id!("Bmr31xzZYYVUdoHmAJL1DAp2anaitW8Tw9YfASS94MKJ");
 
+#[macro_export]
+macro_rules! try_from {
+    // https://github.com/coral-xyz/anchor/pull/2770
+    ($ty: ty, $acc: expr) => {
+        <$ty>::try_from(unsafe { core::mem::transmute::<_, &AccountInfo<'_>>($acc.as_ref()) })
+    };
+}
+
 #[program]
 pub mod perpetuals {
     use super::*;
@@ -98,8 +106,8 @@ pub mod perpetuals {
         instructions::withdraw_sol_fees(ctx, &params)
     }
 
-    pub fn upgrade_custody<'info>(
-        ctx: Context<'_, '_, '_, 'info, UpgradeCustody<'info>>,
+    pub fn upgrade_custody<'a, 'b, 'c, 'info>(
+        ctx: Context<'a, 'b, 'c, 'info, UpgradeCustody<'info>>,
         params: UpgradeCustodyParams,
     ) -> Result<u8> {
         instructions::upgrade_custody(ctx, &params)

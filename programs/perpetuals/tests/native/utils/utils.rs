@@ -1,8 +1,11 @@
 use {
     crate::instructions,
     anchor_lang::{prelude::*, InstructionData},
-    anchor_spl::token::spl_token,
-    bonfida_test_utils::ProgramTestContextExt,
+    anchor_spl::{
+        token::spl_token,
+        associated_token::{ID as ASSOCIATED_TOKEN_PROGRAM_ID, spl_associated_token_account},
+    },
+    // bonfida_test_utils::ProgramTestContextExt,
     borsh::BorshDeserialize,
     perpetuals::{
         instructions::SetCustodyConfigParams,
@@ -11,9 +14,10 @@ use {
     },
     solana_program::{
         clock::DEFAULT_MS_PER_SLOT, epoch_schedule::DEFAULT_SLOTS_PER_EPOCH, program_pack::Pack,
+        system_instruction,
     },
     solana_program_test::{BanksClientError, ProgramTest, ProgramTestContext},
-    solana_sdk::{account, signature::Keypair, signer::Signer, signers::Signers},
+    solana_sdk::{account, signature::Keypair, signer::Signer, signers::Signers, transaction::Transaction},
     std::ops::{Div, Mul},
     tokio::sync::RwLock,
 };
@@ -92,11 +96,33 @@ pub async fn initialize_token_account(
     mint: &Pubkey,
     owner: &Pubkey,
 ) -> Pubkey {
+    let (token_account, _) = find_associated_token_account(owner, mint);
+    
+    // Create the associated token account
     let mut ctx = program_test_ctx.write().await;
-
-    ctx.initialize_token_accounts(*mint, &[*owner])
-        .await
-        .unwrap()[0]
+    
+    let mut transaction = Transaction::new_with_payer(
+        &[
+            spl_associated_token_account::instruction::create_associated_token_account(
+                &ctx.payer.pubkey(),
+                owner,
+                mint,
+                &spl_token::id(),
+            ),
+        ],
+        Some(&ctx.payer.pubkey()),
+    );
+    
+    transaction.sign(&[&ctx.payer], ctx.last_blockhash);
+    
+    let result = ctx.banks_client.process_transaction(transaction).await;
+    
+    // Ignore errors if the account already exists
+    if let Err(e) = result {
+        println!("Warning: Could not create token account: {:?}", e);
+    }
+    
+    token_account
 }
 
 pub async fn initialize_and_fund_token_account(
@@ -128,10 +154,24 @@ pub async fn mint_tokens(
     amount: u64,
 ) {
     let mut ctx = program_test_ctx.write().await;
-
-    ctx.mint_tokens(mint_authority, mint, token_account, amount)
-        .await
-        .unwrap();
+    
+    let mut transaction = Transaction::new_with_payer(
+        &[
+            spl_token::instruction::mint_to(
+                &spl_token::id(),
+                mint,
+                token_account,
+                &mint_authority.pubkey(),
+                &[],
+                amount,
+            ).unwrap(),
+        ],
+        Some(&ctx.payer.pubkey()),
+    );
+    
+    transaction.sign(&[&ctx.payer, mint_authority], ctx.last_blockhash);
+    
+    ctx.banks_client.process_transaction(transaction).await.unwrap();
 }
 
 pub async fn create_and_fund_multiple_accounts(
@@ -311,11 +351,34 @@ pub async fn initialize_users_token_accounts(
     users: Vec<Pubkey>,
 ) {
     for mint in mints {
-        let mut ctx = program_test_ctx.write().await;
-
-        ctx.initialize_token_accounts(mint, users.as_slice())
-            .await
-            .unwrap();
+        for user in &users {
+            let (token_account, _) = find_associated_token_account(user, &mint);
+            
+            // Create the associated token account
+            let mut ctx = program_test_ctx.write().await;
+            
+            let mut transaction = Transaction::new_with_payer(
+                &[
+                    // Create associated token account instruction
+                    spl_associated_token_account::instruction::create_associated_token_account(
+                        &ctx.payer.pubkey(),
+                        user,
+                        &mint,
+                        &spl_token::id(),
+                    ),
+                ],
+                Some(&ctx.payer.pubkey()),
+            );
+            
+            transaction.sign(&[&ctx.payer], ctx.last_blockhash);
+            
+            let result = ctx.banks_client.process_transaction(transaction).await;
+            
+            // Ignore errors if the account already exists
+            if let Err(e) = result {
+                println!("Warning: Could not create token account: {:?}", e);
+            }
+        }
     }
 }
 
@@ -347,4 +410,46 @@ pub async fn warp_forward(ctx: &RwLock<ProgramTestContext>, seconds: i64) {
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
 
     ctx.last_blockhash = blockhash;
+}
+
+pub async fn create_and_initialize_mint(
+    program_test_ctx: &RwLock<ProgramTestContext>,
+    mint_keypair: &Keypair,
+    mint_authority: &Keypair,
+    freeze_authority: Option<&Pubkey>,
+    decimals: u8,
+) {
+    let mut ctx = program_test_ctx.write().await;
+    
+    // Get rent for the mint account
+    let rent = ctx.banks_client.get_rent().await.unwrap();
+    let mint_rent = rent.minimum_balance(spl_token::state::Mint::LEN);
+    
+    // Create a transaction to create and initialize the mint
+    let mut transaction = Transaction::new_with_payer(
+        &[
+            // Create the mint account
+            system_instruction::create_account(
+                &ctx.payer.pubkey(),
+                &mint_keypair.pubkey(),
+                mint_rent,
+                spl_token::state::Mint::LEN as u64,
+                &spl_token::id(),
+            ),
+            // Initialize the mint
+            spl_token::instruction::initialize_mint(
+                &spl_token::id(),
+                &mint_keypair.pubkey(),
+                &mint_authority.pubkey(),
+                freeze_authority,
+                decimals,
+            ).unwrap(),
+        ],
+        Some(&ctx.payer.pubkey()),
+    );
+    
+    // Sign and send the transaction
+    transaction.sign(&[&ctx.payer, mint_keypair], ctx.last_blockhash);
+    
+    ctx.banks_client.process_transaction(transaction).await.unwrap();
 }

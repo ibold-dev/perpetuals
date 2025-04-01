@@ -1,5 +1,6 @@
 use {
     crate::{
+        try_from,
         error::PerpetualsError,
         math,
         state::{
@@ -720,7 +721,7 @@ impl Pool {
             }
 
             require_keys_eq!(accounts[idx].key(), custody);
-            let custody = Account::<Custody>::try_from(&accounts[idx])?;
+            let custody = try_from!(Account::<Custody>, accounts[idx])?;
 
             require_keys_eq!(accounts[oracle_idx].key(), custody.oracle.oracle_account);
 
