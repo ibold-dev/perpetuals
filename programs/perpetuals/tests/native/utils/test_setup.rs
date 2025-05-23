@@ -4,6 +4,7 @@ use {
         instructions,
         utils::{self, fixtures},
     },
+    anchor_lang::solana_program::pubkey::Pubkey,
     // bonfida_test_utils::ProgramTestExt,
     perpetuals::{
         instructions::{AddCustodyParams, AddLiquidityParams, SetCustomOraclePriceParams},
@@ -13,7 +14,6 @@ use {
             pool::TokenRatios,
         },
     },
-    solana_program::pubkey::Pubkey,
     solana_program_test::{ProgramTest, ProgramTestContext},
     solana_sdk::{signature::Keypair, signer::Signer},
     std::collections::HashMap,
@@ -161,9 +161,9 @@ impl TestSetup {
             for mint_param in &mints_param {
                 // Create a new mint keypair
                 let mint_keypair = Keypair::new();
-                
+
                 let mint_pubkey = mint_keypair.pubkey();
-                
+
                 // Store the keypair for later initialization
                 mint_keypairs.push(utils::copy_keypair(&mint_keypair));
 
@@ -186,7 +186,7 @@ impl TestSetup {
         // Now initialize each mint
         for (i, mint_param) in mints_param.iter().enumerate() {
             let mint_keypair = &mint_keypairs[i];
-            
+
             // Create and initialize the mint
             utils::create_and_initialize_mint(
                 &program_test_ctx,
@@ -194,7 +194,8 @@ impl TestSetup {
                 &root_authority_keypair,
                 None, // No freeze authority
                 mint_param.decimals,
-            ).await;
+            )
+            .await;
         }
 
         // Initialize multisig

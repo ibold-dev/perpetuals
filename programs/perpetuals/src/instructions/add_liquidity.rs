@@ -11,9 +11,8 @@ use {
             pool::{AumCalcMode, Pool},
         },
     },
-    anchor_lang::prelude::*,
+    anchor_lang::{prelude::*, solana_program::program_error::ProgramError},
     anchor_spl::token::{Mint, Token, TokenAccount},
-    solana_program::program_error::ProgramError,
 };
 
 #[derive(Accounts)]

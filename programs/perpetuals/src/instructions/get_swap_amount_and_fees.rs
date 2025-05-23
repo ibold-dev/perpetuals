@@ -7,8 +7,7 @@ use {
         perpetuals::{Perpetuals, SwapAmountAndFees},
         pool::Pool,
     },
-    anchor_lang::prelude::*,
-    solana_program::program_error::ProgramError,
+    anchor_lang::{prelude::*, solana_program::program_error::ProgramError},
 };
 
 #[derive(Accounts)]

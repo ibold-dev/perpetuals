@@ -24,7 +24,7 @@ solana_security_txt::security_txt! {
     auditors: "Halborn"
 }
 
-declare_id!("Bmr31xzZYYVUdoHmAJL1DAp2anaitW8Tw9YfASS94MKJ");
+declare_id!("GAe535anCWR3h4fD1idNcUgrqfPqVbkDAjkt12U5DpNQ");
 
 #[macro_export]
 macro_rules! try_from {

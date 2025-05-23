@@ -8,8 +8,7 @@ use {
         pool::Pool,
         position::{Position, Side},
     },
-    anchor_lang::prelude::*,
-    solana_program::program_error::ProgramError,
+    anchor_lang::{prelude::*, solana_program::program_error::ProgramError},
 };
 
 #[derive(Accounts)]

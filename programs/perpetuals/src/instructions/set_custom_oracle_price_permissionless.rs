@@ -5,8 +5,10 @@ use {
         error::PerpetualsError,
         state::{custody::Custody, oracle::CustomOracle, perpetuals::Perpetuals, pool::Pool},
     },
-    anchor_lang::prelude::*,
-    solana_program::{ed25519_program, instruction::Instruction, sysvar},
+    anchor_lang::{
+        prelude::*,
+        solana_program::{ed25519_program, instruction::Instruction, sysvar},
+    },
 };
 
 #[derive(Accounts)]

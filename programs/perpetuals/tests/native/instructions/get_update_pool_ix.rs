@@ -1,8 +1,9 @@
 use {
     crate::utils::{self, pda},
-    anchor_lang::{prelude::Pubkey, InstructionData, ToAccountMetas},
+    anchor_lang::{
+        prelude::Pubkey, solana_program::instruction::AccountMeta, InstructionData, ToAccountMetas,
+    },
     perpetuals::state::{custody::Custody, pool::Pool},
-    solana_program::instruction::AccountMeta,
     solana_program_test::{BanksClientError, ProgramTestContext},
     solana_sdk::signer::{keypair::Keypair, Signer},
     tokio::sync::RwLock,

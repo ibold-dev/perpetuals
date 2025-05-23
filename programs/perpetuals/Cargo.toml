@@ -24,15 +24,16 @@ default = []
 idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 
 [dependencies]
-anchor-lang = {version="0.31.0", features = ["init-if-needed", "event-cpi"]}
-anchor-spl = "0.31.0"
-solana-program = "*"
+anchor-lang = {version="0.31.1", features = ["init-if-needed", "event-cpi"]}
+anchor-spl = "0.31.1"
+# solana-program = "*"
 solana-security-txt = "1.1.1"
 pyth-min = "0.1.1"
 ahash = "0.8.1"
 num-traits = "0.2.19"
 num = "0.4.3"
 bytemuck = { version = "1.4.0" }
+proc-macro2 = { version = "1.0.95", features = ["nightly", "span-locations"] }
 
 [dev-dependencies]
 solana-program-test = "2.2.2"

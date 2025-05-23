@@ -1,14 +1,14 @@
 [toolchain]
-anchor_version = "0.31.0"
+anchor_version = "0.31.1"
 solana_version = "2.2.2"
 
 [features]
 seeds = false
 skip-lint = false
 [programs.localnet]
-perpetuals = "Bmr31xzZYYVUdoHmAJL1DAp2anaitW8Tw9YfASS94MKJ"
+perpetuals = "GAe535anCWR3h4fD1idNcUgrqfPqVbkDAjkt12U5DpNQ"
 [programs.devnet]
-perpetuals = "Bmr31xzZYYVUdoHmAJL1DAp2anaitW8Tw9YfASS94MKJ"
+perpetuals = "GAe535anCWR3h4fD1idNcUgrqfPqVbkDAjkt12U5DpNQ"
 
 [registry]
 url = "https://api.apr.dev"

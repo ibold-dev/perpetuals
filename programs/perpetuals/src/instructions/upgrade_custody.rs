@@ -10,8 +10,7 @@ use {
             pool::Pool,
         },
     },
-    anchor_lang::prelude::*,
-    solana_program::program_memory::sol_memcpy,
+    anchor_lang::{prelude::*, solana_program::program_memory::sol_memcpy},
     std::{
         cmp,
         io::{self, Write},
@@ -120,12 +119,12 @@ pub fn upgrade_custody<'a, 'b, 'c, 'info>(
     if custody_account.try_data_len()? != DeprecatedCustody::LEN {
         return Err(ProgramError::InvalidAccountData.into());
     }
-    
+
     // Use a different approach to deserialize the account data
     let data = custody_account.try_borrow_data()?;
-    let mut lamports = custody_account.lamports();
-    let owner = *custody_account.owner;
-    
+    //  let mut lamports = custody_account.lamports();
+    //  let owner = *custody_account.owner;
+
     // Create the deprecated custody account directly
     let deprecated_custody = DeprecatedCustody::try_deserialize(&mut &data[8..])?;
 
