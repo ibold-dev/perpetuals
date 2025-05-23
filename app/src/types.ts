@@ -7,20 +7,20 @@ export type Methods = MethodsNamespace<Perpetuals>;
 export type Accounts = IdlAccounts<Perpetuals>;
 export type Types = IdlTypes<Perpetuals>;
 
-export type InitParams = Types["InitParams"];
+export type InitParams = Types["initParams"];
 
-export type OracleParams = Types["OracleParams"];
-export type PricingParams = Types["PricingParams"];
-export type Permissions = Types["Permissions"];
-export type Fees = Types["Fees"];
-export type BorrowRateParams = Types["BorrowRateParams"];
-export type TokenRatio = Types["TokenRatios"];
-export type SetCustomOraclePriceParams = Types["SetCustomOraclePriceParams"];
-export type AmountAndFee = Types["AmountAndFee"];
-export type NewPositionPricesAndFee = Types["NewPositionPricesAndFee"];
-export type PriceAndFee = Types["PriceAndFee"];
-export type ProfitAndLoss = Types["ProfitAndLoss"];
-export type SwapAmountAndFees = Types["SwapAmountAndFees"];
+export type OracleParams = Types["oracleParams"];
+export type PricingParams = Types["pricingParams"];
+export type Permissions = Types["permissions"];
+export type Fees = Types["fees"];
+export type BorrowRateParams = Types["borrowRateParams"];
+export type TokenRatio = Types["tokenRatios"];
+export type SetCustomOraclePriceParams = Types["setCustomOraclePriceParams"];
+export type AmountAndFee = Types["amountAndFee"];
+export type NewPositionPricesAndFee = Types["newPositionPricesAndFee"];
+export type PriceAndFee = Types["priceAndFee"];
+export type ProfitAndLoss = Types["profitAndLoss"];
+export type SwapAmountAndFees = Types["swapAmountAndFees"];
 
 export type Custody = Accounts["custody"];
 export type Pool = Accounts["pool"];
