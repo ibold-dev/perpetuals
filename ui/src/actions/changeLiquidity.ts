@@ -146,10 +146,10 @@ export async function changeLiquidity(
 
   console.log("before pre");
   if (preInstructions)
-    methodBuilder = methodBuilder.preInstructions(preInstructions);
+    methodBuilder = methodBuilder?.preInstructions(preInstructions);
 
   if (custody.getTokenE() == TokenE.SOL) {
-    methodBuilder = methodBuilder.postInstructions(postInstructions);
+    methodBuilder = methodBuilder?.postInstructions(postInstructions);
   }
 
   console.log("after pre");
@@ -158,7 +158,8 @@ export async function changeLiquidity(
     //   methodBuilder,
     //   perpetual_program.provider.connection
     // );
-    let tx = await methodBuilder.transaction();
+    let tx = await methodBuilder?.transaction();
+    if (!tx) throw new Error("Transaction not found");
     await manualSendTransaction(
       tx,
       publicKey,

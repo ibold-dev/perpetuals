@@ -72,7 +72,7 @@ export async function closePosition(
       position: position.address,
       custody: custody.address,
       custodyOracleAccount: custody.oracle.oracleAccount,
-      custodyTokenAccount: custody.tokenAccount,
+      //    custodyTokenAccount: custody.tokenAccount,
       tokenProgram: TOKEN_PROGRAM_ID,
     })
     .preInstructions(preInstructions);

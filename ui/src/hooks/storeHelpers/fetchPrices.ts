@@ -9,8 +9,8 @@ type FetchedData = {
   };
 };
 
-export function fetchAllStats(): PriceStats {
-  let stats = fetch(
+export async function fetchAllStats(): Promise<PriceStats> {
+  let stats = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${TOKEN_LIST.map(
       getTokenId
     ).join(

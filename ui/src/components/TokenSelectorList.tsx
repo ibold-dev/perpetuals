@@ -24,11 +24,11 @@ export function TokenSelectorList(props: Props) {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 bottom-0 z-20 bg-black/40"
+      className="fixed bottom-0 left-0 right-0 top-0 z-20 bg-black/40"
       onClick={props.onClose}
     >
       <div
-        className="absolute top-0 bottom-0 left-0 w-[424px] bg-zinc-900 p-4"
+        className="absolute bottom-0 left-0 top-0 w-[424px] bg-zinc-900 p-4"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex items-center justify-between">

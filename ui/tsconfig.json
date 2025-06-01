@@ -36,11 +36,11 @@
       "@/utils/*": ["./src/utils/*"],
       "@/styles/*": ["./src/styles/*"],
       "@/hooks/*": ["./src/hooks/*"],
-      "@/target/*": ["./src/target/*"],
+      "@/target/*": ["../target/*"],
       "@/lib/*": ["src/lib/*"],
-      "@/stores/*": ["src/stores/*"],
+      "@/stores/*": ["src/stores/*"]
     }
   },
   "exclude": ["./out/**/*", "./node_modules/**/*", "**/*.test.ts"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "target"]
 }

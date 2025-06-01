@@ -1,3 +1,4 @@
+import { Perpetuals } from "@/target/types/perpetuals";
 import { MethodsBuilder } from "@coral-xyz/anchor/dist/cjs/program/namespace/methods";
 import { Connection, Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { toast } from "react-toastify";
@@ -17,7 +18,7 @@ export const getUnixTs = () => {
 };
 
 export async function automaticSendTransaction(
-  methodBuilder: MethodsBuilder,
+  methodBuilder: MethodsBuilder<Perpetuals, Perpetuals>,
   connection: Connection
 ) {
   let successMessage = "Transaction success!";
@@ -37,7 +38,7 @@ export async function sendAnchorTransactionAndNotify({
   successMessage,
   failMessage,
 }: {
-  methodBuilder: MethodsBuilder;
+  methodBuilder: MethodsBuilder<Perpetuals, Perpetuals>;
   connection: Connection;
   successMessage: string;
   failMessage: string;

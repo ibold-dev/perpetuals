@@ -1,0 +1,21 @@
+npx ts-node app/src/cli.ts  -k keypair.json init --min-signatures 2 \
+  5nDguqS1LZEsTbobffznA1gFSSioqiFBEP9Ween88g2V \
+  HGqUUF2i3oS6nEKiqRFpF6mB65zbVq2wAEAACAxTVEu8 \
+  FF9Nm2YYpyvdYseEdoyjaQT95EYrmqvEsyXgaSZgnGcT
+
+  npx ts-node app/src/cli.ts -k keypair.json get-multisig
+  npx ts-node app/src/cli.ts -k keypair.json get-perpetuals
+
+  npx ts-node app/src/cli.ts -k keys/admin-key-1.json add-pool crypto-pool
+  npx ts-node app/src/cli.ts -k keys/admin-key-2.json add-pool crypto-pool
+
+  npx ts-node app/src/cli.ts -k admin-key-1.json add-custody crypto-pool So11111111111111111111111111111111111111112 HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J -v -t pyth
+
+  npx ts-node app/src/cli.ts -k admin-key-2.json add-custody crypto-pool So11111111111111111111111111111111111111112 HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J -v -t pyth
+
+  keys/admin-key-1.json
+
+
+  npx ts-node app/src/cli.ts -k keys/admin-key-1.json get-pools
+npx ts-node app/src/cli.ts -k  key/admin-key-1.json get-custodies crypto-pool
+

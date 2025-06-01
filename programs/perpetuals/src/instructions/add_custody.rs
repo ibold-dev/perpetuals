@@ -46,9 +46,9 @@ pub struct AddCustody<'info> {
                               (pool.ratios.len() + 1) * std::mem::size_of::<TokenRatios>(),
         realloc::payer = admin,
         realloc::zero = false,
-        seeds = [b"pool",
-                 pool.name.as_bytes()],
-        bump = pool.bump
+        // seeds = [b"pool",
+        //          pool.name.as_bytes()],
+        // bump = pool.bump
     )]
     pub pool: Box<Account<'info, Pool>>,
 
@@ -148,7 +148,7 @@ pub fn add_custody<'info>(
     custody.borrow_rate = params.borrow_rate;
     custody.borrow_rate_state.current_rate = params.borrow_rate.base_rate;
     custody.borrow_rate_state.last_update = ctx.accounts.perpetuals.get_time()?;
-    
+
     custody.bump = ctx.bumps.custody;
     custody.token_account_bump = ctx.bumps.custody_token_account;
 

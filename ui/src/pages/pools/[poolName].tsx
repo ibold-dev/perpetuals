@@ -6,11 +6,9 @@ import LiquidityCard from "@/components/PoolModal/LiquidityCard";
 import PoolGeneralStats from "@/components/PoolModal/PoolGeneralStats";
 import PoolTokenStats from "@/components/PoolModal/PoolTokenStats";
 import { useGlobalStore } from "@/stores/store";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 
 export default function SinglePool() {
-  const router = useRouter();
-
   const poolData = useGlobalStore((state) => state.poolData);
   let pool = poolData[router.query.poolName as string];
 

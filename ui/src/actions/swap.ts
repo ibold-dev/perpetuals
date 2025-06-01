@@ -28,9 +28,8 @@ export async function swapTransactionBuilder(
   bottomToken: TokenE,
   amtInNumber: number,
   minAmtOutNumber?: number
-  // @ts-ignore
 ): Promise<{
-  methodBuilder: MethodsBuilder;
+  methodBuilder: MethodsBuilder<any, any>;
   preInstructions: TransactionInstruction[];
   postInstructions: TransactionInstruction[];
 }> {

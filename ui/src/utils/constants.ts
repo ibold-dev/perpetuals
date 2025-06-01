@@ -1,4 +1,3 @@
-import * as PerpetualsJson from "@/target/idl/perpetuals.json";
 import { IDL as PERPETUALS_IDL, Perpetuals } from "@/target/types/perpetuals";
 import { getProvider } from "@/utils/provider";
 import { AnchorProvider, Program, Wallet } from "@coral-xyz/anchor";
@@ -8,7 +7,7 @@ import { WalletContextState } from "@solana/wallet-adapter-react";
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
 
 export const PERPETUALS_PROGRAM_ID = new PublicKey(
-  PerpetualsJson["metadata"]["address"]
+  "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"
 );
 
 class DefaultWallet implements Wallet {

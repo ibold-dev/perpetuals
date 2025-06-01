@@ -46,7 +46,7 @@ export class PerpetualsClient {
   authority: { publicKey: PublicKey; bump: number };
   perpetuals: { publicKey: PublicKey; bump: number };
 
-  constructor(clusterUrl: string, adminKey: string) {
+  constructor(clusterUrl: string, adminKey) {
     this.provider = AnchorProvider.local(clusterUrl, {
       commitment: "confirmed",
       preflightCommitment: "confirmed",
@@ -480,15 +480,17 @@ export class PerpetualsClient {
       })
       .accounts({
         admin: this.admin.publicKey,
+
         //   multisig: this.multisig.publicKey,
         //  transferAuthority: this.authority.publicKey,
         //   perpetuals: this.perpetuals.publicKey,
-        //    pool: this.getPoolKey(poolName),
-        //   custody: this.getCustodyKey(poolName, tokenMint),
-        //   custodyTokenAccount: this.getCustodyTokenAccountKey(
-        //     poolName,
-        //     tokenMint
-        //   ),
+
+        pool: this.getPoolKey(poolName),
+        // custody: this.getCustodyKey(poolName, tokenMint),
+        // custodyTokenAccount: this.getCustodyTokenAccountKey(
+        //   poolName,
+        //   tokenMint
+        // ),
         custodyTokenMint: tokenMint,
         // systemProgram: SystemProgram.programId,
         // tokenProgram: TOKEN_PROGRAM_ID,

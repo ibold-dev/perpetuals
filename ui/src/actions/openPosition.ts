@@ -182,7 +182,7 @@ export async function openPositionBuilder(
     position: positionAccount,
     custody: positionCustody.address,
     custodyOracleAccount: positionCustody.oracle.oracleAccount,
-    custodyTokenAccount: positionCustody.tokenAccount,
+    // custodyTokenAccount: positionCustody.tokenAccount,
     systemProgram: SystemProgram.programId,
     tokenProgram: TOKEN_PROGRAM_ID,
   });

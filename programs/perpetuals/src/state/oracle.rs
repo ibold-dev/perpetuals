@@ -295,7 +295,8 @@ impl OraclePrice {
         let data = &pyth_price_info.data.borrow();
 
         // Skip the 8-byte discriminator when passing to Pyth
-        let price_v2 = pyth_min::price_update::PriceUpdateV2::get_price_update_v2_from_bytes(&data[8..]);
+        let price_v2 =
+            pyth_min::price_update::PriceUpdateV2::get_price_update_v2_from_bytes(&data[8..]);
 
         // Get the price message
         let price_message = price_v2.price_message;
@@ -307,7 +308,7 @@ impl OraclePrice {
             msg!("Error: Pyth oracle price is stale");
             return err!(PerpetualsError::StaleOraclePrice);
         }
-        
+
         // Use EMA price if requested, otherwise use current price
         let price_value = if use_ema {
             if price_message.ema_price <= 0 {
@@ -318,13 +319,13 @@ impl OraclePrice {
         } else {
             price_message.price
         };
-        
+
         let conf_value = if use_ema {
             price_message.ema_conf
         } else {
             price_message.conf
         };
-        
+
         if price_value <= 0
             || math::checked_div(
                 math::checked_mul(conf_value as u128, Perpetuals::BPS_POWER)?,

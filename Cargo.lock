@@ -3017,7 +3017,6 @@ dependencies = [
 name = "perpetuals"
 version = "0.1.0"
 dependencies = [
- "ahash",
  "anchor-lang",
  "anchor-spl",
  "bincode",

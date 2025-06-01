@@ -4,6 +4,7 @@ import { BN } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { PerpetualsClient } from "./client";
 import { Command } from "commander";
+
 import {
   BorrowRateParams,
   Fees,
@@ -83,7 +84,12 @@ async function addCustody(
   const oracleConfig: OracleParams = {
     maxPriceError: new BN(10_000),
     maxPriceAgeSec: 60,
-    oracleType: { [oracleType]: {} },
+    oracleType:
+      oracleType === "pyth"
+        ? { pyth: {} }
+        : oracleType === "custom"
+          ? { custom: {} }
+          : { none: {} },
     oracleAccount: tokenOracle,
     oracleAuthority: PublicKey.default, // By default, permissionless oracle price update is not allowed.
   };

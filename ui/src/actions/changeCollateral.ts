@@ -37,6 +37,11 @@ export async function changeCollateral(
     walletContextState
   );
 
+  if (!perpetual_program) {
+    console.error("Perpetual program not found");
+    return;
+  }
+
   let publicKey = walletContextState.publicKey!;
 
   let custody = pool.getCustodyAccount(position.token)!;
@@ -89,7 +94,7 @@ export async function changeCollateral(
         position: position.address,
         custody: custody.address,
         custodyOracleAccount: custody.oracle.oracleAccount,
-        custodyTokenAccount: custody.tokenAccount,
+        //    custodyTokenAccount: custody.tokenAccount,
         tokenProgram: TOKEN_PROGRAM_ID,
       });
   } else {
@@ -118,7 +123,7 @@ export async function changeCollateral(
         position: position.address,
         custody: custody.address,
         custodyOracleAccount: custody.oracle.oracleAccount,
-        custodyTokenAccount: custody.tokenAccount,
+        //   custodyTokenAccount: custody.tokenAccount,
         tokenProgram: TOKEN_PROGRAM_ID,
       });
   }

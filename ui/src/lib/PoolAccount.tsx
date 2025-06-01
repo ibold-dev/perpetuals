@@ -1,7 +1,7 @@
-import { PriceStats } from "@/hooks/storeHelpers/fetchPrices";
+// import { PriceStats } from "@/hooks/storeHelpers/fetchPrices";
 import { CustodyAccount } from "@/lib/CustodyAccount";
 import { TokenE } from "@/lib/Token";
-import { AccountMeta, Pool, TokenRatios } from "@/lib/types";
+import { AccountMeta, Pool, PriceStats, TokenRatios } from "@/lib/types";
 import { PERPETUALS_PROGRAM_ID } from "@/utils/constants";
 import { BN } from "@coral-xyz/anchor";
 import { findProgramAddressSync } from "@coral-xyz/anchor/dist/cjs/utils/pubkey";
@@ -41,7 +41,7 @@ export class PoolAccount {
 
     let tempRatios: Record<string, TokenRatios> = {};
     pool.ratios.forEach((ratio: TokenRatios, index: number) => {
-      tempRatios[pool.custodies[index].toString()] = ratio;
+      tempRatios[pool.custodies[index]?.toString() ?? ""] = ratio;
     });
 
     this.custodies = tempCustodies;
@@ -52,9 +52,13 @@ export class PoolAccount {
   }
 
   getRatioStruct(publicKey: PublicKey): TokenRatios {
-    return this.ratios[publicKey.toString()]
-      ? this.ratios[publicKey.toString()]
-      : { target: new BN(1), min: new BN(1), max: new BN(1) };
+    return (
+      this.ratios[publicKey.toString()] ?? {
+        target: new BN(1),
+        min: new BN(1),
+        max: new BN(1),
+      }
+    );
     // find the indexin
   }
 

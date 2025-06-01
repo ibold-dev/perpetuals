@@ -2,14 +2,14 @@
 
 use {
     crate::{error::PerpetualsError, math},
-    ahash::AHasher,
-    anchor_lang::prelude::*,
-    std::hash::Hasher,
+    // ahash::AHasher,
+    anchor_lang::{prelude::*, solana_program::hash::hashv},
+    // std::hash::Hasher,
 };
 
 #[repr(C, packed)]
 #[account(zero_copy)]
-#[derive(Default)]
+#[derive(Default, PartialEq)]
 pub struct Multisig {
     pub num_signers: u8,
     pub num_signed: u8,
@@ -45,22 +45,36 @@ impl Multisig {
     /// Returns instruction accounts and data hash.
     /// Hash is not cryptographic and is meant to perform a fast check that admins are signing
     /// the same instruction.
+    // pub fn get_instruction_hash(
+    //     instruction_accounts: &[AccountInfo],
+    //     instruction_data: &[u8],
+    // ) -> u64 {
+    //     let mut hasher = AHasher::default();
+
+    //     for account in instruction_accounts {
+    //         hasher.write(account.key.as_ref());
+    //     }
+    //     if !instruction_data.is_empty() {
+    //         hasher.write(instruction_data);
+    //     }
+    //     hasher.finish()
+    // }
+
     pub fn get_instruction_hash(
         instruction_accounts: &[AccountInfo],
         instruction_data: &[u8],
-    ) -> u64 {
-        let mut hasher = AHasher::default();
-        
-        hasher.write_u64(697533735114380);
-        hasher.write_u64(537268678243635);
-        
+    ) -> [u8; 32] {
+        let mut data_to_hash = Vec::new();
+
         for account in instruction_accounts {
-            hasher.write(account.key.as_ref());
+            data_to_hash.extend_from_slice(account.key.as_ref());
         }
+
         if !instruction_data.is_empty() {
-            hasher.write(instruction_data);
+            data_to_hash.extend_from_slice(instruction_data);
         }
-        hasher.finish()
+
+        hashv(&[&data_to_hash]).to_bytes()
     }
 
     /// Returns all accounts for the given context
@@ -160,7 +174,7 @@ impl Multisig {
 
         let instruction_hash =
             Multisig::get_instruction_hash(instruction_accounts, instruction_data);
-        if instruction_hash != self.instruction_hash
+        if instruction_hash[..] != self.instruction_hash.to_le_bytes()
             || instruction_accounts.len() != self.instruction_accounts_len as usize
             || instruction_data.len() != self.instruction_data_len as usize
         {
@@ -168,7 +182,8 @@ impl Multisig {
             self.num_signed = 1;
             self.instruction_accounts_len = instruction_accounts.len() as u8;
             self.instruction_data_len = instruction_data.len() as u16;
-            self.instruction_hash = instruction_hash;
+            // self.instruction_hash = instruction_hash;
+            self.instruction_hash = u64::from_le_bytes(instruction_hash[..8].try_into().unwrap());
             self.signed.fill(0);
             self.signed[signer_idx] = 1;
             //multisig.pack(*multisig_account.try_borrow_mut_data()?)?;
